@@ -59,9 +59,10 @@ router.get("/users/:id", async (req, res) => {
     res.status(200).json({
       name: user.name,
       email: user.email,
-      phoneNumber: user.phoneNumber,
-      jobTitle: user.jobTitle,
-      profilePhoto, // Base64 encoded image
+      phoneNumber: user.phoneNumber, // Ensure correct field mapping
+      dob: user.dob,             // Add dob
+      address: user.address,     // Add address
+      profilePhoto,
     });
   } catch (error) {
     res.status(500).json({ message: "Error fetching user", error: error.message });
@@ -69,9 +70,11 @@ router.get("/users/:id", async (req, res) => {
 });
 
 
-// Update User Profile (Allow updating all details except email)
+
 router.put("/users/:id", async (req, res) => {
   try {
+    console.log("Request Body:", req.body); // Debugging log
+
     const { id } = req.params;
     const { name, password, role, phoneNumber, jobTitle, profilePhoto, dob, address } = req.body;
 
@@ -84,12 +87,14 @@ router.put("/users/:id", async (req, res) => {
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
-
     res.status(200).json(updatedUser);
   } catch (error) {
+    console.error("Error updating user:", error);
     res.status(500).json({ message: "Error updating user", error: error.message });
   }
 });
+
+
 
 // Update User Role (Admin Only)
 router.put("/users/update-role/:id", verifyAdmin, async (req, res) => {

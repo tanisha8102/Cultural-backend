@@ -28,19 +28,20 @@ export const authenticateUser = async (req, res, next) => {
   try {
     const token = req.header("Authorization")?.split(" ")[1];
 
-    if (!token) {
-      return res.status(401).json({ message: "No token, authorization denied" });
-    }
+    if (!token) return res.status(401).json({ message: "No token, authorization denied" });
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // ✅ Use jwt properly
-    req.user = await User.findById(decoded.id).select("-password");
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+      if (err) {
+        if (err.name === "TokenExpiredError") {
+          return res.status(401).json({ message: "Access Token Expired", error: "jwt expired" });
+        }
+        return res.status(401).json({ message: "Invalid token", error: err.message });
+      }
 
-    if (!req.user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    next();
+      req.user = await User.findById(decoded.id).select("-password");
+      next();
+    });
   } catch (error) {
-    res.status(401).json({ message: "Invalid token", error: error.message });
+    res.status(500).json({ message: "Authentication failed", error: error.message });
   }
 };
