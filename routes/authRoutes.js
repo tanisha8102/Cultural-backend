@@ -74,7 +74,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/refresh-token", (req, res) => {
-  console.log("Received Cookies:", req.cookies); // ✅ Debugging line
+
   const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) return res.status(403).json({ message: "Refresh Token Required" });

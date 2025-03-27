@@ -73,7 +73,6 @@ router.get("/users/:id", async (req, res) => {
 
 router.put("/users/:id", async (req, res) => {
   try {
-    console.log("Request Body:", req.body); // Debugging log
 
     const { id } = req.params;
     const { name, password, role, phoneNumber, jobTitle, profilePhoto, dob, address } = req.body;

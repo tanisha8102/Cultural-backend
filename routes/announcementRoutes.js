@@ -15,15 +15,17 @@ router.post("/create", async (req, res) => {
   }
 });
 
-// Get all announcements
+// Get all announcements with count
 router.get("/", async (req, res) => {
   try {
     const announcements = await Announcement.find();
-    res.json(announcements);
+    const count = await Announcement.countDocuments();
+    res.json({ count, announcements });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch announcements" });
   }
 });
+
 
 // Get a single announcement by ID
 router.get("/:id", async (req, res) => {
@@ -61,5 +63,18 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to delete announcement" });
   }
 });
+
+// Get the count of announcements
+router.get("/count", async (req, res) => {
+  try {
+    const count = await Announcement.countDocuments();
+    res.json({ count });
+  } catch (error) {
+    console.error("Error counting announcements:", error); // Log full error details
+    res.status(500).json({ error: "Failed to count announcements", details: error.message });
+  }
+});
+
+
 
 export default router;
